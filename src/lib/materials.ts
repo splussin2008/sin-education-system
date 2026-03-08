@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabase';
-
 // Interface defining the structure of a Material
 export interface Material {
     id: string;
@@ -13,18 +11,22 @@ export interface Material {
 }
 
 /**
- * Reads all materials from Supabase
+ * Reads all materials from API
  */
 export async function getMaterials(): Promise<Material[]> {
-    const { data, error } = await supabase
-        .from('materials')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Error reading materials:', error);
+    try {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const res = await fetch(`${baseUrl}/api/materials`, {
+            cache: 'no-store'
+        });
+        if (!res.ok) {
+            console.error('Failed to fetch materials:', res.statusText);
+            return [];
+        }
+        return await res.json() as Material[];
+    } catch (e) {
+        console.error('Error fetching materials:', e);
         return [];
     }
-    return data as Material[];
 }
 

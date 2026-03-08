@@ -248,8 +248,23 @@ export default function Home() {
                         <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">{material.subject}</span>
                         <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700">{material.level}</span>
                       </div>
-                      <h3 className="text-lg font-bold text-slate-800 mb-1">{material.title}</h3>
-                      <p className="text-sm text-slate-500">単元: {material.unit}</p>
+                      <h3 className="text-lg font-bold text-slate-800 mb-1">
+                        <Link href={`/materials/${material.id}`} className="hover:text-blue-600 transition-colors">
+                          {material.title}
+                        </Link>
+                      </h3>
+                      <p className="text-sm text-slate-500 mb-3">単元: {material.unit}</p>
+                      {/* Optional: Add links to the raw PDFs here if you added properties to the Material type. Currently the Material type only has pdfUrl for problems. */}
+                      {material.pdfUrl && material.pdfUrl !== '#' && (
+                        <div className="flex flex-wrap gap-2">
+                          <a href={material.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center gap-1 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                            </svg>
+                            問題PDFを開く
+                          </a>
+                        </div>
+                      )}
                     </div>
                     <div className="flex sm:flex-col gap-2">
                       <button
@@ -257,6 +272,30 @@ export default function Home() {
                         className={`flex-1 sm:w-32 h-10 ${selectedMaterialIds.has(material.id) ? 'bg-slate-200 text-slate-700 hover:bg-slate-300' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'} rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 text-sm`}
                       >
                         {selectedMaterialIds.has(material.id) ? '選択解除' : '+ 選択する'}
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          if (window.confirm(`「${material.title}」と関連するPDFを完全に削除します。よろしいですか？`)) {
+                            // Call delete API
+                            try {
+                              const res = await fetch(`/api/materials?id=${material.id}`, { method: 'DELETE' });
+                              if (res.ok) {
+                                // Normally we would use deleteMaterial from context here, but since Home doesn't expose it directly without adding it to the top level, 
+                                // we can just force a refresh for simplicity or use the hook properly.
+                                window.location.reload();
+                              } else {
+                                alert('削除に失敗しました。');
+                              }
+                            } catch (e) {
+                              console.error(e);
+                              alert('エラーが発生しました。');
+                            }
+                          }
+                        }}
+                        className="flex-1 sm:w-32 h-10 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 text-sm"
+                      >
+                        削除する
                       </button>
                     </div>
                   </div>

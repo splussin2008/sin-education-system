@@ -1,0 +1,1690 @@
+
+
+// ==========================================
+// File: .env.example
+// ==========================================
+
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+
+// ==========================================
+// File: .env.local
+// ==========================================
+
+NEXT_PUBLIC_SUPABASE_URL=https://mlbansuodwkfprdtfldp.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_tD0A0Qg1YWV47F_QV33w-w_70CEFg1o
+
+
+// ==========================================
+// File: .gitignore
+// ==========================================
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+
+// ==========================================
+// File: create-dummy-pdfs.ts
+// ==========================================
+
+import { PDFDocument, rgb } from 'pdf-lib';
+import fs from 'fs';
+
+async function createDummyPdfs() {
+    const createPdf = async (text: string, filename: string) => {
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
+        page.drawText(text, {
+            x: 50,
+            y: 800,
+            size: 24,
+            color: rgb(0, 0, 0),
+        });
+        const pdfBytes = await pdfDoc.save();
+        fs.writeFileSync(filename, pdfBytes);
+        console.log(`Created ${filename}`);
+    };
+
+    await createPdf('This is a dummy Problem PDF 1', 'dummy_problem_1.pdf');
+    await createPdf('This is a dummy Answer PDF 1', 'dummy_answer_1.pdf');
+    await createPdf('This is a dummy Problem PDF 2', 'dummy_problem_2.pdf');
+}
+
+createDummyPdfs().catch(console.error);
+
+
+// ==========================================
+// File: eslint.config.mjs
+// ==========================================
+
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+
+
+// ==========================================
+// File: next-env.d.ts
+// ==========================================
+
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+
+
+// ==========================================
+// File: next.config.ts
+// ==========================================
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+
+
+// ==========================================
+// File: package.json
+// ==========================================
+
+{
+  "name": "sin-education-system",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.98.0",
+    "firebase": "^12.10.0",
+    "next": "16.1.6",
+    "pdf-lib": "^1.17.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+
+
+// ==========================================
+// File: postcss.config.mjs
+// ==========================================
+
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+
+
+// ==========================================
+// File: README.md
+// ==========================================
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+// ==========================================
+// File: src\app\admin\layout.tsx
+// ==========================================
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="min-h-screen bg-slate-100">
+            <header className="bg-slate-800 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
+                <h1 className="text-xl font-bold tracking-wider">教材管理システム</h1>
+                <a href="/" className="text-sm bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded transition-colors">検索画面へ戻る</a>
+            </header>
+            <main className="max-w-4xl mx-auto px-4 py-8">
+                {children}
+            </main>
+        </div>
+    );
+}
+
+
+// ==========================================
+// File: src\app\admin\materials\new\page.tsx
+// ==========================================
+
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMaterials } from '@/context/MaterialContext';
+import { Grade, Subject, Level, Material } from '@/types/material';
+import { unitMap } from '@/data/units';
+
+const grades: Grade[] = ['中1', '中2', '中3', '高校受験', '高1', '高2', '高3', '大学受験'];
+const jhsSubjects: Subject[] = ['国語', '数学', '英語', '理科', '地理', '歴史', '公民'];
+const hsSubjects: Subject[] = [
+    '国語', '英語',
+    '数学I', '数学A', '数学II', '数学B', '数学III', '数学C',
+    '物理基礎', '物理', '化学基礎', '化学', '生物基礎', '生物', '地学基礎', '地学',
+    '歴史総合', '日本史探究', '世界史探究', '地理総合', '地理探究', '公共', '倫理', '政治・経済'
+];
+
+export default function NewMaterialPage() {
+    const router = useRouter();
+    const { addMaterial } = useMaterials();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Basic Info State
+    const [title, setTitle] = useState('');
+    const [grade, setGrade] = useState<Grade | ''>('');
+    const [subject, setSubject] = useState<Subject | ''>('');
+    const [unit, setUnit] = useState('');
+
+    // PDF State
+    const [problemPdf, setProblemPdf] = useState<File | null>(null);
+    const [answerPdf, setAnswerPdf] = useState<File | null>(null);
+
+    const availableSubjects = useMemo(() => {
+        if (!grade) {
+            return Array.from(new Set([...jhsSubjects, ...hsSubjects]));
+        }
+        if (grade.startsWith('中') || grade === '高校受験') {
+            return jhsSubjects;
+        }
+        return hsSubjects;
+    }, [grade]);
+
+    const availableUnits = useMemo(() => {
+        if (!subject) return [];
+        if (grade && (grade.startsWith('中') || grade === '高校受験')) {
+            const jhsKey = `${grade}_${subject}`;
+            if (unitMap[jhsKey]) {
+                return unitMap[jhsKey];
+            }
+        }
+        return unitMap[subject] || [];
+    }, [grade, subject]);
+
+    const handleProblemFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.type === 'application/pdf') {
+            setProblemPdf(file);
+        } else if (file) {
+            alert('問題編はPDFファイルを選択してください。');
+        }
+    };
+
+    const handleAnswerFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.type === 'application/pdf') {
+            setAnswerPdf(file);
+        } else if (file) {
+            alert('解答編はPDFファイルを選択してください。');
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!title || !grade || !subject || !unit) {
+            alert('基本情報をすべて入力してください。');
+            return;
+        }
+        if (!problemPdf) {
+            alert('問題編のPDFファイルをアップロードしてください。');
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('grade', grade);
+            formData.append('subject', subject);
+            formData.append('unit', unit);
+            formData.append('problemPdf', problemPdf);
+
+            if (answerPdf) {
+                formData.append('answerPdf', answerPdf);
+            }
+
+            const res = await fetch('/api/materials', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to upload material');
+            }
+
+            const savedMaterial = await res.json();
+
+            // Re-fetch context to get latest materials
+            await addMaterial(savedMaterial);
+
+            alert('教材を保存しました！');
+            router.push(`/admin`); // 成功時は一覧へ戻すか、詳細ページへ
+
+        } catch (error: any) {
+            console.error('Error uploading:', error);
+            alert(`エラーが発生しました: ${error.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-200 pb-4">新規プリント作成（APIアップロード）</h2>
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+                {/* 基本情報 */}
+                <section className="bg-slate-50 p-6 rounded-xl border border-slate-200 space-y-4">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4">1. 基本情報</h3>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">プリントのタイトル *</label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                            placeholder="例: 1学期中間テスト対策 数学"
+                            className="w-full h-12 px-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">学年 *</label>
+                            <select value={grade} onChange={e => setGrade(e.target.value as Grade)} required className="w-full h-12 px-4 rounded-xl border border-slate-300 bg-white">
+                                <option value="">選択</option>
+                                {grades.map(g => <option key={g} value={g}>{g}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">科目 *</label>
+                            <select value={subject} onChange={e => { setSubject(e.target.value as Subject); setUnit(''); }} required className="w-full h-12 px-4 rounded-xl border border-slate-300 bg-white">
+                                <option value="">選択</option>
+                                {availableSubjects.map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">単元 *</label>
+                            <select value={unit} onChange={e => setUnit(e.target.value)} required disabled={!subject} className="w-full h-12 px-4 rounded-xl border border-slate-300 bg-white">
+                                <option value="">選択</option>
+                                {availableUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                {/* PDFアップロード */}
+                <section className="space-y-6 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4">2. 問題構成（PDFアップロード）</h3>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">問題編のPDFファイルを選択してください *</label>
+                        <input
+                            type="file"
+                            accept="application/pdf"
+                            onChange={handleProblemFile}
+                            required
+                            className="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100 transition-all cursor-pointer"
+                        />
+                        {problemPdf && <p className="text-sm mt-2 text-green-600">✓ {problemPdf.name} が選択されています</p>}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">解答編のPDFファイルを選択してください（任意）</label>
+                        <input
+                            type="file"
+                            accept="application/pdf"
+                            onChange={handleAnswerFile}
+                            className="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-slate-200 file:text-slate-700
+                            hover:file:bg-slate-300 transition-all cursor-pointer"
+                        />
+                        {answerPdf && <p className="text-sm mt-2 text-green-600">✓ {answerPdf.name} が選択されています</p>}
+                    </div>
+                </section>
+
+                <div className="pt-8 border-t border-slate-200">
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`w-full h-14 text-white font-bold rounded-xl text-lg shadow-lg transition-colors ${isSubmitting ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
+                    >
+                        {isSubmitting ? 'アップロード処理中...' : 'サーバーにアップロードして保存'}
+                    </button>
+                    <p className="text-xs text-slate-500 text-center mt-3">
+                        ※ファイルはサーバーのローカルディレクトリに保存され、JSONで管理されます。
+                    </p>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+
+// ==========================================
+// File: src\app\api\materials\route.ts
+// ==========================================
+
+import { NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
+import { Material, getMaterials } from '@/lib/materials';
+import { supabase } from '@/lib/supabase';
+
+// GET handler to fetch all materials (with optional filtering)
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const grade = searchParams.get('grade');
+        const subject = searchParams.get('subject');
+        const unit = searchParams.get('unit');
+
+        let materials = await getMaterials();
+
+        // Apply filters if provided
+        if (grade) materials = materials.filter(m => m.grade === grade);
+        if (subject) materials = materials.filter(m => m.subject === subject);
+        if (unit) materials = materials.filter(m => m.unit === unit);
+
+        return NextResponse.json(materials);
+    } catch (error) {
+        console.error("GET /api/materials error:", error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+// POST handler to upload a new material
+export async function POST(request: Request) {
+    try {
+        const formData = await request.formData();
+
+        const title = formData.get('title') as string;
+        const grade = formData.get('grade') as string;
+        const subject = formData.get('subject') as string;
+        const unit = formData.get('unit') as string;
+        const problemPdf = formData.get('problemPdf') as File | null;
+        const answerPdf = formData.get('answerPdf') as File | null;
+
+        if (!title || !grade || !subject || !unit || !problemPdf) {
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        // Generate unique ID
+        const newId = uuidv4();
+
+        // Save Problem PDF to Supabase Storage
+        const probFilename = `problem_${newId}.pdf`;
+        const { error: probUploadError } = await supabase.storage
+            .from('materials')
+            .upload(probFilename, problemPdf, {
+                contentType: 'application/pdf',
+                upsert: true
+            });
+
+        if (probUploadError) {
+            console.error('Error uploading problem PDF:', probUploadError);
+            return NextResponse.json({ error: 'Failed to upload problem PDF' }, { status: 500 });
+        }
+
+        // Save Answer PDF if exists
+        let ansFilename = null;
+        if (answerPdf) {
+            ansFilename = `answer_${newId}.pdf`;
+            const { error: ansUploadError } = await supabase.storage
+                .from('materials')
+                .upload(ansFilename, answerPdf, {
+                    contentType: 'application/pdf',
+                    upsert: true
+                });
+            if (ansUploadError) {
+                console.error('Error uploading answer PDF:', ansUploadError);
+                return NextResponse.json({ error: 'Failed to upload answer PDF' }, { status: 500 });
+            }
+        }
+
+        // Insert into Database
+        const { data: newMaterial, error: dbError } = await supabase
+            .from('materials')
+            .insert([{
+                id: newId,
+                title,
+                grade,
+                subject,
+                unit,
+                problem_pdf_path: probFilename,
+                answer_pdf_path: ansFilename
+            }])
+            .select()
+            .single();
+
+        if (dbError) {
+            console.error('Error saving to database:', dbError);
+            return NextResponse.json({ error: 'Failed to save to database' }, { status: 500 });
+        }
+
+        return NextResponse.json(newMaterial, { status: 201 });
+    } catch (error) {
+        console.error("POST /api/materials error:", error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+// DELETE handler
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ error: 'Material ID is required' }, { status: 400 });
+        }
+
+        // Fetch material to get file paths
+        const { data: material, error: fetchError } = await supabase
+            .from('materials')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !material) {
+            return NextResponse.json({ error: 'Material not found' }, { status: 404 });
+        }
+
+        // Delete from DB
+        const { error: deleteError } = await supabase
+            .from('materials')
+            .delete()
+            .eq('id', id);
+
+        if (deleteError) {
+            console.error('Error deleting from database:', deleteError);
+            return NextResponse.json({ error: 'Failed to delete from database' }, { status: 500 });
+        }
+
+        // Delete files from storage
+        const filesToRemove = [material.problem_pdf_path];
+        if (material.answer_pdf_path) {
+            filesToRemove.push(material.answer_pdf_path);
+        }
+
+        const { error: storageError } = await supabase.storage
+            .from('materials')
+            .remove(filesToRemove);
+
+        if (storageError) {
+            console.error('Warning: Failed to delete files from storage:', storageError);
+        }
+
+        return NextResponse.json({ message: 'Material deleted successfully' });
+    } catch (error) {
+        console.error("DELETE /api/materials error:", error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+
+// ==========================================
+// File: src\app\api\pdf\merge\answer\route.ts
+// ==========================================
+
+import { NextResponse } from 'next/server';
+import { PDFDocument } from 'pdf-lib';
+import { getMaterials, Material } from '@/lib/materials';
+import { supabase } from '@/lib/supabase';
+
+export async function POST(request: Request) {
+    try {
+        const { materialIds } = await request.json();
+
+        if (!Array.isArray(materialIds) || materialIds.length === 0) {
+            return NextResponse.json({ error: 'No material IDs provided' }, { status: 400 });
+        }
+
+        const materials = await getMaterials();
+        const selectedMaterials = materials.filter((m: Material) => materialIds.includes(m.id));
+
+        if (selectedMaterials.length === 0) {
+            return NextResponse.json({ error: 'Selected materials not found' }, { status: 404 });
+        }
+
+        // Initialize a new PDFDocument
+        const mergedPdf = await PDFDocument.create();
+        let hasAnswers = false;
+
+        for (const material of selectedMaterials) {
+            try {
+                if (!material.answer_pdf_path) {
+                    // It's perfectly normal for a material to not have an answer
+                    continue;
+                }
+
+                const { data, error } = await supabase.storage
+                    .from('materials')
+                    .download(material.answer_pdf_path);
+
+                if (error || !data) {
+                    console.error(`Failed to download Answer PDF from storage for material ${material.id}:`, error);
+                    continue;
+                }
+
+                const pdfBytes = await data.arrayBuffer();
+                const pdf = await PDFDocument.load(pdfBytes);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach((page) => mergedPdf.addPage(page));
+                hasAnswers = true;
+            } catch (err) {
+                console.error(`Failed to load or merge Answer PDF for material ${material.id}:`, err);
+            }
+        }
+
+        // If no pages were added (because no answers were found for the selection)
+        if (!hasAnswers || mergedPdf.getPageCount() === 0) {
+            return NextResponse.json({ error: 'No answers available for selected materials' }, { status: 404 });
+        }
+
+        // Serialize the PDFDocument to bytes (a Uint8Array)
+        const pdfBytes = await mergedPdf.save();
+
+        // Return the PDF as a Response with appropriate headers
+        // Cast the Uint8Array to any to satisfy TS, or Buffer which works in Node.
+        return new NextResponse(Buffer.from(pdfBytes), {
+            headers: {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'attachment; filename="answers.pdf"',
+            },
+        });
+
+    } catch (error) {
+        console.error('POST /api/pdf/merge/answer error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+
+// ==========================================
+// File: src\app\api\pdf\merge\problem\route.ts
+// ==========================================
+
+import { NextResponse } from 'next/server';
+import { PDFDocument } from 'pdf-lib';
+import { getMaterials, Material } from '@/lib/materials';
+import { supabase } from '@/lib/supabase';
+
+export async function POST(request: Request) {
+    try {
+        const { materialIds } = await request.json();
+
+        if (!Array.isArray(materialIds) || materialIds.length === 0) {
+            return NextResponse.json({ error: 'No material IDs provided' }, { status: 400 });
+        }
+
+        const materials = await getMaterials();
+        const selectedMaterials = materials.filter((m: Material) => materialIds.includes(m.id));
+
+        if (selectedMaterials.length === 0) {
+            return NextResponse.json({ error: 'Selected materials not found' }, { status: 404 });
+        }
+
+        // Initialize a new PDFDocument
+        const mergedPdf = await PDFDocument.create();
+
+        for (const material of selectedMaterials) {
+            try {
+                if (!material.problem_pdf_path) {
+                    console.warn(`Problem PDF path not found for material ID: ${material.id}`);
+                    continue;
+                }
+                const { data, error } = await supabase.storage
+                    .from('materials')
+                    .download(material.problem_pdf_path);
+
+                if (error || !data) {
+                    console.error(`Failed to download PDF from storage for material ${material.id}:`, error);
+                    continue;
+                }
+
+                const pdfBytes = await data.arrayBuffer();
+                const pdf = await PDFDocument.load(pdfBytes);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach((page) => mergedPdf.addPage(page));
+            } catch (err) {
+                console.error(`Failed to load or merge PDF for material ${material.id}:`, err);
+            }
+        }
+
+        // If no pages were added
+        if (mergedPdf.getPageCount() === 0) {
+            return NextResponse.json({ error: 'Could not generate PDF' }, { status: 500 });
+        }
+
+        // Serialize the PDFDocument to bytes (a Uint8Array)
+        const pdfBytes = await mergedPdf.save();
+
+        // Return the PDF as a Response with appropriate headers
+        return new NextResponse(Buffer.from(pdfBytes), {
+            headers: {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'attachment; filename="problems.pdf"',
+            },
+        });
+
+    } catch (error) {
+        console.error('POST /api/pdf/merge/problem error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+
+// ==========================================
+// File: src\app\globals.css
+// ==========================================
+
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+// ==========================================
+// File: src\app\layout.tsx
+// ==========================================
+
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { MaterialProvider } from "@/context/MaterialContext";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Sin Education System",
+  description: "Material Search and Print System",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <MaterialProvider>
+          {children}
+        </MaterialProvider>
+      </body>
+    </html>
+  );
+}
+
+
+// ==========================================
+// File: src\app\materials\layout.tsx
+// ==========================================
+
+// 印刷用ページでは共通のヘッダーなどを隠し、A4白背景に全画面表示するため、
+// 別途専用のレイアウトを用意するか、page.tsx側で工夫します。
+// ここでは、材料ごとの画面を作るため、最低限のラッパーだけ提供します。
+
+export default function MaterialLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="bg-slate-200 min-h-screen py-8 print:bg-white print:py-0">
+            {children}
+        </div>
+    );
+}
+
+
+// ==========================================
+// File: src\app\materials\[id]\page.tsx
+// ==========================================
+
+'use client';
+
+import React from 'react';
+import { notFound } from 'next/navigation';
+import { useMaterials } from '@/context/MaterialContext';
+
+export default function MaterialPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
+    const { materials } = useMaterials();
+    const material = materials.find(m => m.id === id);
+
+    if (!material) {
+        notFound();
+    }
+
+    return (
+        <div className="max-w-[210mm] mx-auto bg-white shadow-xl min-h-[297mm] p-12 print:shadow-none print:w-auto print:h-auto print:min-h-0 print:p-0 relative font-serif text-slate-800">
+            {/* 印刷除外のコントロールパネル */}
+            <div className="absolute top-4 right-4 print:hidden flex gap-2">
+                <button
+                    onClick={() => window.print()}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold shadow-md transition-colors flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
+                    </svg>
+                    印刷する
+                </button>
+                <button
+                    onClick={() => window.close()}
+                    className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg font-bold shadow-md transition-colors"
+                >
+                    閉じる
+                </button>
+            </div>
+
+            {/* ヘッダー部分 */}
+            <div className="border-b-2 border-slate-800 pb-2 mb-8 flex justify-between items-end">
+                <div>
+                    <span className="text-sm font-bold border border-slate-800 px-2 py-0.5 rounded-sm mr-2">{material.grade} {material.subject}</span>
+                    <span className="text-sm font-bold border border-slate-800 px-2 py-0.5 rounded-sm mr-2">{material.level}</span>
+                    <span className="text-sm text-slate-600">単元: {material.unit}</span>
+                </div>
+                <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-end gap-1">
+                        <span>年</span><span className="inline-block w-8 border-b border-slate-400"></span>
+                        <span>月</span><span className="inline-block w-8 border-b border-slate-400"></span>
+                        <span>日</span>
+                    </div>
+                    <div className="flex items-end gap-1">
+                        <span>氏名</span><span className="inline-block w-32 border-b border-slate-400"></span>
+                    </div>
+                    <div className="flex items-center border border-slate-800 px-2 py-1">
+                        得点 <span className="inline-block w-12 text-center border-b border-slate-400 mx-1"></span> / 100
+                    </div>
+                </div>
+            </div>
+
+            {/* タイトル */}
+            <h1 className="text-2xl font-bold text-center mb-10 tracking-widest">{material.title}</h1>
+
+            {/* 問題本文 (動的レンダリング or PDF) */}
+            <div className="space-y-12">
+                {material.pdfUrl && material.pdfUrl !== '#' ? (
+                    <div className="w-full h-[800px] border border-slate-300 rounded-lg overflow-hidden print:border-none print:h-auto print:min-h-screen">
+                        <iframe
+                            src={material.pdfUrl}
+                            className="w-full h-full print:w-[210mm] print:h-[297mm]"
+                            title="PDF Viewer"
+                        />
+                    </div>
+                ) : material.questions ? (
+                    material.questions.map((q) => (
+                        <section key={q.id}>
+                            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <span className="flex items-center justify-center w-6 h-6 bg-slate-800 text-white rounded-full text-sm">{q.id}</span>
+                                {q.title}（各{q.points}点）
+                            </h2>
+                            <div className={`pl-8 text-lg ${q.items.some(item => item.answerArea === 'calc') ? 'grid grid-cols-2 gap-y-12' : 'space-y-12'}`}>
+                                {q.items.map((item, index) => (
+                                    <div key={item.id} className={q.items.some(i => i.answerArea === 'calc') ? '' : 'flex'}>
+                                        <span className="mr-2">({index + 1})</span>
+                                        <div className="flex-1">
+                                            {/* 問題文の改行対応 (\n を <br/> に変換) */}
+                                            <p className={item.answerArea === 'calc' ? 'ml-2 inline-block' : 'mb-6 leading-relaxed'}>
+                                                {item.text.split('\\n').map((line, i) => (
+                                                    <span key={i}>
+                                                        {line}
+                                                        {i !== item.text.split('\\n').length - 1 && <br />}
+                                                    </span>
+                                                ))}
+                                            </p>
+
+                                            {/* 解答欄の出し分け */}
+                                            {item.answerArea === 'short' && (
+                                                <p className={item.text.includes('\\n') ? 'mt-4' : 'mt-8'}>答．<span className="inline-block w-48 border-b border-slate-400"></span></p>
+                                            )}
+                                            {item.answerArea === 'long' && (
+                                                <div className="border-b border-slate-400 w-full h-8 mt-2"></div>
+                                            )}
+                                            {item.answerArea === 'calc' && (
+                                                <span className="ml-4 pr-2"></span>
+                                            )}
+                                            {item.answerArea === 'blank' && null}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    ))
+                ) : (
+                    <div className="text-center text-slate-500 py-20">問題データまたはPDFファイルが登録されていません。</div>
+                )}
+            </div>
+
+            {/* フッター */}
+            <div className="absolute bottom-12 w-[calc(100%-6rem)] text-center text-xs text-slate-400 pt-4 border-t border-slate-200">
+                &copy; 学習塾Sin° All Rights Reserved. - {material.id}
+            </div>
+        </div>
+    );
+}
+
+
+// ==========================================
+// File: src\app\page.tsx
+// ==========================================
+
+'use client';
+
+import { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
+import { Grade, Subject, Level, Material } from '@/types/material';
+import { unitMap } from '@/data/units';
+import { useMaterials } from '@/context/MaterialContext';
+
+const grades: Grade[] = ['中1', '中2', '中3', '高校受験', '高1', '高2', '高3', '大学受験'];
+const jhsSubjects: Subject[] = ['国語', '数学', '英語', '理科', '地理', '歴史', '公民'];
+const hsSubjects: Subject[] = [
+  '国語', '英語',
+  '数学I', '数学A', '数学II', '数学B', '数学III', '数学C',
+  '物理基礎', '物理', '化学基礎', '化学', '生物基礎', '生物', '地学基礎', '地学',
+  '歴史総合', '日本史探究', '世界史探究', '地理総合', '地理探究', '公共', '倫理', '政治・経済'
+];
+const levels: Level[] = ['基礎', '標準', '発展', 'テスト対策'];
+
+export default function Home() {
+  const { materials } = useMaterials();
+  const [selectedGrade, setSelectedGrade] = useState<Grade | ''>('');
+  const [selectedSubject, setSelectedSubject] = useState<Subject | ''>('');
+  const [selectedLevel, setSelectedLevel] = useState<Level | ''>('');
+  const [unitSearch, setUnitSearch] = useState('');
+
+  // Selection state for merging PDFs
+  const [selectedMaterialIds, setSelectedMaterialIds] = useState<Set<string>>(new Set());
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const availableSubjects = useMemo(() => {
+    if (!selectedGrade) {
+      return Array.from(new Set([...jhsSubjects, ...hsSubjects]));
+    }
+    // 中学枠：「中」から始まるか、高校受験
+    if (selectedGrade.startsWith('中') || selectedGrade === '高校受験') {
+      return jhsSubjects;
+    }
+    // 高校枠：「高」から始まるか、大学受験
+    return hsSubjects;
+  }, [selectedGrade]);
+
+  useEffect(() => {
+    if (selectedGrade && selectedSubject) {
+      if (!availableSubjects.includes(selectedSubject)) {
+        setSelectedSubject('');
+        setUnitSearch('');
+      }
+    }
+  }, [selectedGrade, availableSubjects, selectedSubject]);
+
+  const availableUnits = useMemo(() => {
+    if (!selectedSubject) return [];
+
+    // 中学・高校受験の場合は「学年_科目」のキーで検索
+    if (selectedGrade && (selectedGrade.startsWith('中') || selectedGrade === '高校受験')) {
+      const jhsKey = `${selectedGrade}_${selectedSubject}`;
+      if (unitMap[jhsKey]) {
+        return unitMap[jhsKey];
+      }
+    }
+
+    // 高校生、またはキーが見つからなかった場合は科目単体でフォールバック
+    return unitMap[selectedSubject] || [];
+  }, [selectedGrade, selectedSubject]);
+
+  useEffect(() => {
+    if (selectedSubject && unitSearch) {
+      if (!availableUnits.includes(unitSearch)) {
+        setUnitSearch('');
+      }
+    } else if (!selectedSubject) {
+      setUnitSearch('');
+    }
+  }, [selectedSubject, availableUnits, unitSearch]);
+
+  const filteredMaterials = useMemo(() => {
+    return materials.filter((m) => {
+      const matchGrade = !selectedGrade || m.grade === selectedGrade;
+      const matchSubject = !selectedSubject || m.subject === selectedSubject;
+      const matchLevel = !selectedLevel || m.level === selectedLevel;
+      const matchUnit = !unitSearch || m.unit.includes(unitSearch) || m.title.includes(unitSearch);
+      return matchGrade && matchSubject && matchLevel && matchUnit;
+    });
+  }, [selectedGrade, selectedSubject, selectedLevel, unitSearch, materials]);
+
+  const toggleSelection = (id: string) => {
+    setSelectedMaterialIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleDownloadMergedPdf = async (type: 'problem' | 'answer') => {
+    if (selectedMaterialIds.size === 0) {
+      alert('出力するプリントを選択してください。');
+      return;
+    }
+
+    setIsDownloading(true);
+    try {
+      const materialIdsArray = Array.from(selectedMaterialIds);
+      const res = await fetch(`/api/pdf/merge/${type}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ materialIds: materialIdsArray })
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to merge PDF');
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = type === 'problem' ? 'problems.pdf' : 'answers.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (e: any) {
+      console.error(e);
+      alert(`PDFの作成に失敗しました: ${e.message}`);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-32">
+      {/* Header */}
+      <header className="bg-blue-700 text-white p-4 shadow-md sticky top-0 z-10 text-center">
+        <h1 className="text-xl font-bold tracking-wider">学習塾Sin° 教材システム</h1>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 mt-6">
+        {/* Search Filters */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4 border-l-4 border-blue-600 pl-3">検索条件</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Grade */}
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">学年</label>
+              <select
+                value={selectedGrade}
+                onChange={(e) => setSelectedGrade(e.target.value as Grade)}
+                className="w-full h-12 px-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all appearance-none bg-slate-50 text-slate-800"
+              >
+                <option value="">すべて</option>
+                {grades.map((g) => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subject */}
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">科目</label>
+              <select
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value as Subject)}
+                className="w-full h-12 px-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all appearance-none bg-slate-50 text-slate-800"
+              >
+                <option value="">すべて</option>
+                {availableSubjects.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Unit Search */}
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">単元・分野 {!selectedSubject && <span className="text-xs text-red-400">※先に科目を選択してください</span>}</label>
+              <select
+                value={unitSearch}
+                onChange={(e) => setUnitSearch(e.target.value)}
+                disabled={!selectedSubject}
+                className="w-full h-12 px-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all appearance-none bg-slate-50 text-slate-800 disabled:opacity-50 disabled:bg-slate-100"
+              >
+                <option value="">すべて</option>
+                {availableUnits.map((u) => (
+                  <option key={u} value={u}>{u}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Level */}
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">レベル</label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedLevel('')}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${!selectedLevel ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                >
+                  すべて
+                </button>
+                {levels.map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => setSelectedLevel(l)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedLevel === l ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Results List */}
+        <section>
+          <div className="flex justify-between items-center mb-4 px-2">
+            <h2 className="text-lg font-semibold text-slate-800">教材一覧 ({filteredMaterials.length}件)</h2>
+            <Link
+              href="/admin/materials/new"
+              className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors flex items-center gap-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              <span>問題を作成</span>
+            </Link>
+          </div>
+
+          <div className="space-y-4">
+            {filteredMaterials.length > 0 ? (
+              filteredMaterials.map((material) => (
+                <div key={material.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition-colors group flex gap-4 items-center">
+                  <input
+                    type="checkbox"
+                    className="w-6 h-6 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    checked={selectedMaterialIds.has(material.id)}
+                    onChange={() => toggleSelection(material.id)}
+                  />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-1">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700">{material.grade}</span>
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">{material.subject}</span>
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700">{material.level}</span>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-800 mb-1">{material.title}</h3>
+                      <p className="text-sm text-slate-500">単元: {material.unit}</p>
+                    </div>
+                    <div className="flex sm:flex-col gap-2">
+                      <button
+                        onClick={() => toggleSelection(material.id)}
+                        className={`flex-1 sm:w-32 h-10 ${selectedMaterialIds.has(material.id) ? 'bg-slate-200 text-slate-700 hover:bg-slate-300' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'} rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 text-sm`}
+                      >
+                        {selectedMaterialIds.has(material.id) ? '選択解除' : '+ 選択する'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
+                <p className="text-slate-400">該当する教材が見つかりませんでした。</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+
+      {/* Fixed Bottom Action Panel */}
+      {selectedMaterialIds.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 z-50">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-slate-800 font-bold">
+              <span className="text-2xl text-blue-600">{selectedMaterialIds.size}</span>
+              <span className="text-sm ml-1 text-slate-500">件のプリントを選択中</span>
+            </div>
+            <div className="flex gap-3 w-full sm:w-auto">
+              <button
+                onClick={() => handleDownloadMergedPdf('problem')}
+                disabled={isDownloading}
+                className="flex-1 sm:px-6 h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
+              >
+                {isDownloading ? '作成中...' : '問題編PDFを出力'}
+              </button>
+              <button
+                onClick={() => handleDownloadMergedPdf('answer')}
+                disabled={isDownloading}
+                className="flex-1 sm:px-6 h-12 bg-rose-500 hover:bg-rose-600 disabled:bg-rose-400 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
+              >
+                {isDownloading ? '作成中...' : '解答編PDFを出力'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ==========================================
+// File: src\context\MaterialContext.tsx
+// ==========================================
+
+'use client';
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Material } from '@/types/material';
+import { mockMaterials } from '@/data/mockMaterials';
+
+interface MaterialContextType {
+    materials: Material[];
+    addMaterial: (material: Material) => void;
+    updateMaterial: (material: Material) => void;
+    deleteMaterial: (id: string) => void;
+}
+
+const MaterialContext = createContext<MaterialContextType | undefined>(undefined);
+
+export const MaterialProvider = ({ children }: { children: ReactNode }) => {
+    const [materials, setMaterials] = useState<Material[]>(mockMaterials);
+
+    // Initial load from Backend API
+    const fetchMaterials = async () => {
+        try {
+            const res = await fetch('/api/materials');
+            if (res.ok) {
+                const data: Material[] = await res.json();
+                setMaterials(data);
+            }
+        } catch (e) {
+            console.error("Failed to fetch materials from API", e);
+        }
+    };
+
+    useEffect(() => {
+        fetchMaterials();
+    }, []);
+
+    const addMaterial = async (material: Material) => {
+        // Optimistically update UI
+        setMaterials(prev => [...prev, material]);
+        // Note: The actual API call for add is now typically handled via FormData upload in a form, 
+        // passing File objects. So this context method might just be used to append to state 
+        // *after* a successful upload, or we can refetch. For simplicity, we just fetch list again to ensure sync.
+        await fetchMaterials();
+    };
+
+    const updateMaterial = (updatedMaterial: Material) => {
+        // Optionally implement a PUT endpoint and call it here.
+        setMaterials(prev => prev.map(m => m.id === updatedMaterial.id ? updatedMaterial : m));
+    };
+
+    const deleteMaterial = async (id: string) => {
+        try {
+            const res = await fetch(`/api/materials?id=${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                setMaterials(prev => prev.filter(m => m.id !== id));
+            } else {
+                console.error("Failed to delete material");
+            }
+        } catch (e) {
+            console.error("Error deleting material", e);
+        }
+    };
+
+    return (
+        <MaterialContext.Provider value={{ materials, addMaterial, updateMaterial, deleteMaterial }}>
+            {children}
+        </MaterialContext.Provider>
+    );
+};
+
+export const useMaterials = () => {
+    const context = useContext(MaterialContext);
+    if (context === undefined) {
+        throw new Error('useMaterials must be used within a MaterialProvider');
+    }
+    return context;
+};
+
+
+// ==========================================
+// File: src\lib\firebase.ts
+// ==========================================
+
+// Import the functions you need from the SDKs you need
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+};
+
+// Initialize Firebase
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+export { app, db, storage };
+
+
+// ==========================================
+// File: src\lib\materials.ts
+// ==========================================
+
+import { supabase } from '@/lib/supabase';
+
+// Interface defining the structure of a Material
+export interface Material {
+    id: string;
+    title: string;
+    grade: string;
+    subject: string;
+    unit: string;
+    problem_pdf_path: string;
+    answer_pdf_path?: string;
+    created_at?: string;
+}
+
+/**
+ * Reads all materials from Supabase
+ */
+export async function getMaterials(): Promise<Material[]> {
+    const { data, error } = await supabase
+        .from('materials')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error reading materials:', error);
+        return [];
+    }
+    return data as Material[];
+}
+
+
+
+// ==========================================
+// File: src\lib\supabase.ts
+// ==========================================
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+
+// ==========================================
+// File: src\services\materials.ts
+// ==========================================
+
+import { collection, getDocs, query, where, QueryConstraint } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { Material, Grade, Subject, Level } from '../types/material';
+import { mockMaterials } from '../data/mockMaterials';
+
+// Collection name
+const COLLECTION_NAME = 'materials';
+
+/**
+ * [準備段階] 今はダミーデータを返しますが、将来的にFirestoreからデータを取得します
+ */
+export async function getMaterialsFromFirestore(
+    grade?: Grade | '',
+    subject?: Subject | '',
+    level?: Level | '',
+    keyword?: string
+): Promise<Material[]> {
+    // TODO: firebaseConfigが設定され、Firestoreにデータが入ったらこちらのコメントアウトを外す
+    /*
+    try {
+      const materialsRef = collection(db, COLLECTION_NAME);
+      let q = query(materialsRef);
+      const constraints: QueryConstraint[] = [];
+  
+      if (grade) constraints.push(where('grade', '==', grade));
+      if (subject) constraints.push(where('subject', '==', subject));
+      if (level) constraints.push(where('level', '==', level));
+      
+      if (constraints.length > 0) {
+        q = query(materialsRef, ...constraints);
+      }
+  
+      const querySnapshot = await getDocs(q);
+      const materials: Material[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        materials.push({
+          id: doc.id,
+          title: data.title,
+          grade: data.grade,
+          subject: data.subject,
+          unit: data.unit,
+          level: data.level,
+          pdfUrl: data.pdfUrl,
+        });
+      });
+  
+      // クライアント側でキーワード絞り込み（Firestoreの制限回避）
+      if (keyword) {
+        return materials.filter(m => m.unit.includes(keyword) || m.title.includes(keyword));
+      }
+      
+      return materials;
+    } catch (error) {
+      console.error("Error fetching materials from Firestore: ", error);
+      return [];
+    }
+    */
+
+    // フォールバック（現在はダミーデータを返す）
+    console.log('Firebase integration is ready. Using mock data for now.');
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            let results = [...mockMaterials];
+            if (grade) results = results.filter(m => m.grade === grade);
+            if (subject) results = results.filter(m => m.subject === subject);
+            if (level) results = results.filter(m => m.level === level);
+            if (keyword) results = results.filter(m => m.unit.includes(keyword) || m.title.includes(keyword));
+            resolve(results);
+        }, 500); // 疑似的なネットワーク遅延
+    });
+}
+
+
+// ==========================================
+// File: src\types\material.ts
+// ==========================================
+
+export type Grade = '中1' | '中2' | '中3' | '高校受験' | '高1' | '高2' | '高3' | '大学受験';
+export type Subject =
+  | '国語' | '数学' | '英語' | '理科' | '地理' | '歴史' | '公民'
+  | '数学I' | '数学A' | '数学II' | '数学B' | '数学III' | '数学C'
+  | '物理基礎' | '物理' | '化学基礎' | '化学' | '生物基礎' | '生物' | '地学基礎' | '地学'
+  | '歴史総合' | '日本史探究' | '世界史探究' | '地理総合' | '地理探究' | '公共' | '倫理' | '政治・経済';
+export type Level = '基礎' | '標準' | '発展' | 'テスト対策';
+
+export interface QuestionItem {
+  id: string;
+  text: string;
+  answerArea: 'short' | 'long' | 'calc' | 'blank';
+  answer?: string;
+}
+
+export interface Question {
+  id: string;
+  title: string;
+  points: number;
+  items: QuestionItem[];
+}
+
+export interface Material {
+  id: string;
+  title: string;
+  grade: Grade;
+  subject: Subject;
+  unit: string;
+  level: Level;
+  pdfUrl: string;
+  questions?: Question[];
+}
+
+
+// ==========================================
+// File: supabase-setup.sql
+// ==========================================
+
+-- Enable Row Level Security (RLS) and Create Table
+CREATE TABLE materials (
+    id UUID PRIMARY KEY,
+    title TEXT NOT NULL,
+    grade TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    unit TEXT NOT NULL,
+    problem_pdf_path TEXT NOT NULL,
+    answer_pdf_path TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Turn on Row Level Security
+ALTER TABLE materials ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access (anyone can view the materials)
+CREATE POLICY "Allow public read access"
+ON materials FOR SELECT
+TO public
+USING (true);
+
+-- For this project, since there is no admin authentication yet, we will allow public insert/update/delete 
+-- (Note: In a real production app, you should restrict this to authenticated admins only)
+CREATE POLICY "Allow public insert"
+ON materials FOR INSERT
+TO public
+WITH CHECK (true);
+
+CREATE POLICY "Allow public update"
+ON materials FOR UPDATE
+TO public
+USING (true);
+
+CREATE POLICY "Allow public delete"
+ON materials FOR DELETE
+TO public
+USING (true);
+
+
+// ==========================================
+// File: tsconfig.json
+// ==========================================
+
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}

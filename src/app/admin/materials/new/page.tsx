@@ -109,7 +109,7 @@ export default function NewMaterialPage() {
             await addMaterial(savedMaterial);
 
             alert('教材を保存しました！');
-            router.push(`/admin`); // 成功時は一覧へ戻すか、詳細ページへ
+            router.push(`/`); // 成功時はトップページ（一覧）へ戻す
 
         } catch (error: any) {
             console.error('Error uploading:', error);

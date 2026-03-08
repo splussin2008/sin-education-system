@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { PDFDocument } from 'pdf-lib';
-import { getMaterials, Material } from '@/lib/materials';
-import { supabase } from '@/lib/supabase';
+import prisma from '@/lib/prisma';
+import fs from 'fs/promises';
+import path from 'path';
 
 export async function POST(request: Request) {
     try {
@@ -11,8 +12,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No material IDs provided' }, { status: 400 });
         }
 
-        const materials = await getMaterials();
-        const selectedMaterials = materials.filter((m: Material) => materialIds.includes(m.id));
+        const selectedMaterials = await prisma.material.findMany({
+            where: {
+                id: { in: materialIds }
+            }
+        });
 
         if (selectedMaterials.length === 0) {
             return NextResponse.json({ error: 'Selected materials not found' }, { status: 404 });
@@ -20,6 +24,7 @@ export async function POST(request: Request) {
 
         // Initialize a new PDFDocument
         const mergedPdf = await PDFDocument.create();
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'materials');
 
         for (const material of selectedMaterials) {
             try {
@@ -27,16 +32,17 @@ export async function POST(request: Request) {
                     console.warn(`Problem PDF path not found for material ID: ${material.id}`);
                     continue;
                 }
-                const { data, error } = await supabase.storage
-                    .from('materials')
-                    .download(material.problem_pdf_path);
 
-                if (error || !data) {
-                    console.error(`Failed to download PDF from storage for material ${material.id}:`, error);
+                const filePath = path.join(uploadDir, material.problem_pdf_path.replace('/uploads/materials/', ''));
+
+                try {
+                    await fs.access(filePath);
+                } catch {
+                    console.error(`Problem PDF file not found for material ${material.id}:`, filePath);
                     continue;
                 }
 
-                const pdfBytes = await data.arrayBuffer();
+                const pdfBytes = await fs.readFile(filePath);
                 const pdf = await PDFDocument.load(pdfBytes);
                 const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
                 copiedPages.forEach((page) => mergedPdf.addPage(page));

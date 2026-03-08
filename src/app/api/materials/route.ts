@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { Material, getMaterials } from '@/lib/materials';
-import { supabase } from '@/lib/supabase';
+import prisma from '@/lib/prisma';
+import fs from 'fs/promises';
+import path from 'path';
+
+export const dynamic = 'force-dynamic';
 
 // GET handler to fetch all materials (with optional filtering)
 export async function GET(request: Request) {
@@ -11,14 +14,26 @@ export async function GET(request: Request) {
         const subject = searchParams.get('subject');
         const unit = searchParams.get('unit');
 
-        let materials = await getMaterials();
+        // Build where clause
+        const whereClause: any = {};
+        if (grade) whereClause.grade = grade;
+        if (subject) whereClause.subject = subject;
+        if (unit) whereClause.unit = unit;
 
-        // Apply filters if provided
-        if (grade) materials = materials.filter(m => m.grade === grade);
-        if (subject) materials = materials.filter(m => m.subject === subject);
-        if (unit) materials = materials.filter(m => m.unit === unit);
+        const materials = await prisma.material.findMany({
+            where: whereClause,
+            orderBy: { createdAt: 'desc' }
+        });
 
-        return NextResponse.json(materials);
+        // Add proper paths and optional `answer_pdf_path`
+        const returnMaterials = materials.map((m: any) => ({
+            ...m,
+            created_at: m.createdAt,
+            problem_pdf_path: `/uploads/materials/${m.problem_pdf_path}`,
+            answer_pdf_path: m.answer_pdf_path ? `/uploads/materials/${m.answer_pdf_path}` : undefined,
+        }));
+
+        return NextResponse.json(returnMaterials);
     } catch (error) {
         console.error("GET /api/materials error:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -41,43 +56,35 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
+        // Ensure upload directory exists
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'materials');
+        try {
+            await fs.access(uploadDir);
+        } catch {
+            await fs.mkdir(uploadDir, { recursive: true });
+        }
+
         // Generate unique ID
         const newId = uuidv4();
 
-        // Save Problem PDF to Supabase Storage
+        // Save Problem PDF to Local FS
         const probFilename = `problem_${newId}.pdf`;
-        const { error: probUploadError } = await supabase.storage
-            .from('materials')
-            .upload(probFilename, problemPdf, {
-                contentType: 'application/pdf',
-                upsert: true
-            });
-
-        if (probUploadError) {
-            console.error('Error uploading problem PDF:', probUploadError);
-            return NextResponse.json({ error: 'Failed to upload problem PDF' }, { status: 500 });
-        }
+        const problemPdfArrayBuffer = await problemPdf.arrayBuffer();
+        const problemPdfBuffer = Buffer.from(problemPdfArrayBuffer);
+        await fs.writeFile(path.join(uploadDir, probFilename), problemPdfBuffer);
 
         // Save Answer PDF if exists
         let ansFilename = null;
         if (answerPdf) {
             ansFilename = `answer_${newId}.pdf`;
-            const { error: ansUploadError } = await supabase.storage
-                .from('materials')
-                .upload(ansFilename, answerPdf, {
-                    contentType: 'application/pdf',
-                    upsert: true
-                });
-            if (ansUploadError) {
-                console.error('Error uploading answer PDF:', ansUploadError);
-                return NextResponse.json({ error: 'Failed to upload answer PDF' }, { status: 500 });
-            }
+            const answerPdfArrayBuffer = await answerPdf.arrayBuffer();
+            const answerPdfBuffer = Buffer.from(answerPdfArrayBuffer);
+            await fs.writeFile(path.join(uploadDir, ansFilename), answerPdfBuffer);
         }
 
         // Insert into Database
-        const { data: newMaterial, error: dbError } = await supabase
-            .from('materials')
-            .insert([{
+        const newMaterial = await prisma.material.create({
+            data: {
                 id: newId,
                 title,
                 grade,
@@ -85,16 +92,17 @@ export async function POST(request: Request) {
                 unit,
                 problem_pdf_path: probFilename,
                 answer_pdf_path: ansFilename
-            }])
-            .select()
-            .single();
+            }
+        });
 
-        if (dbError) {
-            console.error('Error saving to database:', dbError);
-            return NextResponse.json({ error: 'Failed to save to database' }, { status: 500 });
+        const returnMaterial = {
+            ...newMaterial,
+            created_at: newMaterial.createdAt,
+            problem_pdf_path: `/uploads/materials/${newMaterial.problem_pdf_path}`,
+            answer_pdf_path: newMaterial.answer_pdf_path ? `/uploads/materials/${newMaterial.answer_pdf_path}` : undefined,
         }
 
-        return NextResponse.json(newMaterial, { status: 201 });
+        return NextResponse.json(returnMaterial, { status: 201 });
     } catch (error) {
         console.error("POST /api/materials error:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -112,39 +120,34 @@ export async function DELETE(request: Request) {
         }
 
         // Fetch material to get file paths
-        const { data: material, error: fetchError } = await supabase
-            .from('materials')
-            .select('*')
-            .eq('id', id)
-            .single();
+        const material = await prisma.material.findUnique({
+            where: { id }
+        });
 
-        if (fetchError || !material) {
+        if (!material) {
             return NextResponse.json({ error: 'Material not found' }, { status: 404 });
         }
 
         // Delete from DB
-        const { error: deleteError } = await supabase
-            .from('materials')
-            .delete()
-            .eq('id', id);
-
-        if (deleteError) {
-            console.error('Error deleting from database:', deleteError);
-            return NextResponse.json({ error: 'Failed to delete from database' }, { status: 500 });
-        }
+        await prisma.material.delete({
+            where: { id }
+        });
 
         // Delete files from storage
-        const filesToRemove = [material.problem_pdf_path];
-        if (material.answer_pdf_path) {
-            filesToRemove.push(material.answer_pdf_path);
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'materials');
+
+        try {
+            await fs.unlink(path.join(uploadDir, material.problem_pdf_path));
+        } catch (e) {
+            console.error('Warning: Failed to delete problem PDF from local storage:', e);
         }
 
-        const { error: storageError } = await supabase.storage
-            .from('materials')
-            .remove(filesToRemove);
-
-        if (storageError) {
-            console.error('Warning: Failed to delete files from storage:', storageError);
+        if (material.answer_pdf_path) {
+            try {
+                await fs.unlink(path.join(uploadDir, material.answer_pdf_path));
+            } catch (e) {
+                console.error('Warning: Failed to delete answer PDF from local storage:', e);
+            }
         }
 
         return NextResponse.json({ message: 'Material deleted successfully' });
