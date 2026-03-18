@@ -27,6 +27,8 @@ export interface Material {
   subject: Subject;
   unit: string;
   level: Level;
-  pdfUrl: string;
+  problem_pdf_path: string;
+  answer_pdf_path?: string | null;
+  pdfUrl?: string; // For compatibility
   questions?: Question[];
 }

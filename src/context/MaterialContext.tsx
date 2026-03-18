@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Material } from '@/types/material';
 import { mockMaterials } from '@/data/mockMaterials';
+import { GRADES, JHS_SUBJECTS, HS_SUBJECTS, LEVELS } from '@/data/constants';
 
 interface MaterialContextType {
     materials: Material[];
@@ -22,7 +23,12 @@ export const MaterialProvider = ({ children }: { children: ReactNode }) => {
             const res = await fetch('/api/materials');
             if (res.ok) {
                 const data: Material[] = await res.json();
-                setMaterials(data);
+                // Ensure level exists if missing (for legacy data)
+                const sanitizedData = data.map(m => ({
+                    ...m,
+                    level: m.level || '標準'
+                }));
+                setMaterials(sanitizedData);
             }
         } catch (e) {
             console.error("Failed to fetch materials from API", e);

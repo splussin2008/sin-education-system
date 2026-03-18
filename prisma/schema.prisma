@@ -7,6 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Material {
@@ -15,6 +16,7 @@ model Material {
   grade            String
   subject          String
   unit             String
+  level            String   @default("基礎")
   problem_pdf_path String
   answer_pdf_path  String?
   createdAt        DateTime @default(now())

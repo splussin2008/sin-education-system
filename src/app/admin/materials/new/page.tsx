@@ -5,15 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useMaterials } from '@/context/MaterialContext';
 import { Grade, Subject, Level, Material } from '@/types/material';
 import { unitMap } from '@/data/units';
+import { GRADES, JHS_SUBJECTS, HS_SUBJECTS, LEVELS } from '@/data/constants';
 
-const grades: Grade[] = ['中1', '中2', '中3', '高校受験', '高1', '高2', '高3', '大学受験'];
-const jhsSubjects: Subject[] = ['国語', '数学', '英語', '理科', '地理', '歴史', '公民'];
-const hsSubjects: Subject[] = [
-    '国語', '英語',
-    '数学I', '数学A', '数学II', '数学B', '数学III', '数学C',
-    '物理基礎', '物理', '化学基礎', '化学', '生物基礎', '生物', '地学基礎', '地学',
-    '歴史総合', '日本史探究', '世界史探究', '地理総合', '地理探究', '公共', '倫理', '政治・経済'
-];
 
 export default function NewMaterialPage() {
     const router = useRouter();
@@ -25,6 +18,7 @@ export default function NewMaterialPage() {
     const [grade, setGrade] = useState<Grade | ''>('');
     const [subject, setSubject] = useState<Subject | ''>('');
     const [unit, setUnit] = useState('');
+    const [level, setLevel] = useState<Level | ''>('標準');
 
     // PDF State
     const [problemPdf, setProblemPdf] = useState<File | null>(null);
@@ -32,12 +26,12 @@ export default function NewMaterialPage() {
 
     const availableSubjects = useMemo(() => {
         if (!grade) {
-            return Array.from(new Set([...jhsSubjects, ...hsSubjects]));
+            return Array.from(new Set([...JHS_SUBJECTS, ...HS_SUBJECTS]));
         }
         if (grade.startsWith('中') || grade === '高校受験') {
-            return jhsSubjects;
+            return JHS_SUBJECTS;
         }
-        return hsSubjects;
+        return HS_SUBJECTS;
     }, [grade]);
 
     const availableUnits = useMemo(() => {
@@ -71,7 +65,7 @@ export default function NewMaterialPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title || !grade || !subject || !unit) {
+        if (!title || !grade || !subject || !unit || !level) {
             alert('基本情報をすべて入力してください。');
             return;
         }
@@ -87,6 +81,7 @@ export default function NewMaterialPage() {
             formData.append('grade', grade);
             formData.append('subject', subject);
             formData.append('unit', unit);
+            formData.append('level', level);
             formData.append('problemPdf', problemPdf);
 
             if (answerPdf) {
@@ -145,7 +140,7 @@ export default function NewMaterialPage() {
                             <label className="block text-sm font-medium text-slate-700 mb-1">学年 *</label>
                             <select value={grade} onChange={e => setGrade(e.target.value as Grade)} required className="w-full h-12 px-4 rounded-xl border border-slate-300 bg-white">
                                 <option value="">選択</option>
-                                {grades.map(g => <option key={g} value={g}>{g}</option>)}
+                                {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
                             </select>
                         </div>
                         <div>
@@ -160,6 +155,12 @@ export default function NewMaterialPage() {
                             <select value={unit} onChange={e => setUnit(e.target.value)} required disabled={!subject} className="w-full h-12 px-4 rounded-xl border border-slate-300 bg-white">
                                 <option value="">選択</option>
                                 {availableUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">レベル *</label>
+                            <select value={level} onChange={e => setLevel(e.target.value as Level)} required className="w-full h-12 px-4 rounded-xl border border-slate-300 bg-white">
+                                {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
                             </select>
                         </div>
                     </div>

@@ -1,0 +1,10 @@
+﻿ssh -G splus-sin.com | grep "^user\|^hostname"
+ssh -G splus-sin.com
+ssh sin@splus-sin.com "pm2 list"
+ssh root@162.43.93.188 "id"
+ssh sin-education@162.43.93.188 "id"
+Get-Content C:\Users\sin\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt | Select-String "ssh " | Select-Object -Last 10
+ssh sin@162.43.93.188 "id"
+Get-Content C:\Users\sin\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt | Select-String "ssh -i " | Select-Object -Last 5
+Select-String -Path C:\Users\sin\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt -Pattern "ssh " | Select-Object -Last 20 > C:\Users\sin\.gemini\antigravity\scratch\sin-education-system\ssh_history.txt
+Get-Content C:\Users\sin\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt | Where-Object { $_ -match "ssh " } | Select-Object -Last 10 | Out-File -Encoding utf8 C:\Users\sin\.gemini\antigravity\scratch\sin-education-system\ssh_history_utf8.txt

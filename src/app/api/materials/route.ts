@@ -13,24 +13,27 @@ export async function GET(request: Request) {
         const grade = searchParams.get('grade');
         const subject = searchParams.get('subject');
         const unit = searchParams.get('unit');
+        const level = searchParams.get('level');
 
         // Build where clause
         const whereClause: any = {};
         if (grade) whereClause.grade = grade;
         if (subject) whereClause.subject = subject;
         if (unit) whereClause.unit = unit;
+        if (level) whereClause.level = level;
 
         const materials = await prisma.material.findMany({
             where: whereClause,
             orderBy: { createdAt: 'desc' }
         });
 
-        // Add proper paths and optional `answer_pdf_path`
+        // Add proper paths and ensure compatibility with frontend
         const returnMaterials = materials.map((m: any) => ({
             ...m,
             created_at: m.createdAt,
             problem_pdf_path: `/uploads/materials/${m.problem_pdf_path}`,
             answer_pdf_path: m.answer_pdf_path ? `/uploads/materials/${m.answer_pdf_path}` : undefined,
+            pdfUrl: `/uploads/materials/${m.problem_pdf_path}`, // For compatibility with older UI parts
         }));
 
         return NextResponse.json(returnMaterials);
@@ -49,10 +52,11 @@ export async function POST(request: Request) {
         const grade = formData.get('grade') as string;
         const subject = formData.get('subject') as string;
         const unit = formData.get('unit') as string;
+        const level = formData.get('level') as string;
         const problemPdf = formData.get('problemPdf') as File | null;
         const answerPdf = formData.get('answerPdf') as File | null;
 
-        if (!title || !grade || !subject || !unit || !problemPdf) {
+        if (!title || !grade || !subject || !unit || !level || !problemPdf) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
@@ -90,6 +94,7 @@ export async function POST(request: Request) {
                 grade,
                 subject,
                 unit,
+                level,
                 problem_pdf_path: probFilename,
                 answer_pdf_path: ansFilename
             }
@@ -100,6 +105,7 @@ export async function POST(request: Request) {
             created_at: newMaterial.createdAt,
             problem_pdf_path: `/uploads/materials/${newMaterial.problem_pdf_path}`,
             answer_pdf_path: newMaterial.answer_pdf_path ? `/uploads/materials/${newMaterial.answer_pdf_path}` : undefined,
+            pdfUrl: `/uploads/materials/${newMaterial.problem_pdf_path}`,
         }
 
         return NextResponse.json(returnMaterial, { status: 201 });

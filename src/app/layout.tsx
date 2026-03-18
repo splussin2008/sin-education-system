@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sin Education System",
+  title: "個別指導塾サイン",
   description: "Material Search and Print System",
 };
 

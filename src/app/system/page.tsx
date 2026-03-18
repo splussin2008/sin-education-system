@@ -5,16 +5,8 @@ import Link from 'next/link';
 import { Grade, Subject, Level, Material } from '@/types/material';
 import { unitMap } from '@/data/units';
 import { useMaterials } from '@/context/MaterialContext';
+import { GRADES, JHS_SUBJECTS, HS_SUBJECTS, LEVELS } from '@/data/constants';
 
-const grades: Grade[] = ['中1', '中2', '中3', '高校受験', '高1', '高2', '高3', '大学受験'];
-const jhsSubjects: Subject[] = ['国語', '数学', '英語', '理科', '地理', '歴史', '公民'];
-const hsSubjects: Subject[] = [
-  '国語', '英語',
-  '数学I', '数学A', '数学II', '数学B', '数学III', '数学C',
-  '物理基礎', '物理', '化学基礎', '化学', '生物基礎', '生物', '地学基礎', '地学',
-  '歴史総合', '日本史探究', '世界史探究', '地理総合', '地理探究', '公共', '倫理', '政治・経済'
-];
-const levels: Level[] = ['基礎', '標準', '発展', 'テスト対策'];
 
 export default function Home() {
   const { materials } = useMaterials();
@@ -29,14 +21,14 @@ export default function Home() {
 
   const availableSubjects = useMemo(() => {
     if (!selectedGrade) {
-      return Array.from(new Set([...jhsSubjects, ...hsSubjects]));
+      return Array.from(new Set([...JHS_SUBJECTS, ...HS_SUBJECTS]));
     }
     // 中学枠：「中」から始まるか、高校受験
     if (selectedGrade.startsWith('中') || selectedGrade === '高校受験') {
-      return jhsSubjects;
+      return JHS_SUBJECTS;
     }
     // 高校枠：「高」から始まるか、大学受験
-    return hsSubjects;
+    return HS_SUBJECTS;
   }, [selectedGrade]);
 
   useEffect(() => {
@@ -155,7 +147,7 @@ export default function Home() {
                 className="w-full h-12 px-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all appearance-none bg-slate-50 text-slate-800"
               >
                 <option value="">すべて</option>
-                {grades.map((g) => (
+                {GRADES.map((g) => (
                   <option key={g} value={g}>{g}</option>
                 ))}
               </select>
@@ -202,7 +194,7 @@ export default function Home() {
                 >
                   すべて
                 </button>
-                {levels.map((l) => (
+                {LEVELS.map((l) => (
                   <button
                     key={l}
                     onClick={() => setSelectedLevel(l)}
@@ -254,10 +246,10 @@ export default function Home() {
                         </Link>
                       </h3>
                       <p className="text-sm text-slate-500 mb-3">単元: {material.unit}</p>
-                      {/* Optional: Add links to the raw PDFs here if you added properties to the Material type. Currently the Material type only has pdfUrl for problems. */}
-                      {material.pdfUrl && material.pdfUrl !== '#' && (
+                      {/* Use problem_pdf_path or pdfUrl */}
+                      {(material.problem_pdf_path || material.pdfUrl) && (
                         <div className="flex flex-wrap gap-2">
-                          <a href={material.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center gap-1 transition-colors">
+                          <a href={material.problem_pdf_path || material.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center gap-1 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                             </svg>
@@ -281,8 +273,7 @@ export default function Home() {
                             try {
                               const res = await fetch(`/api/materials?id=${material.id}`, { method: 'DELETE' });
                               if (res.ok) {
-                                // Normally we would use deleteMaterial from context here, but since Home doesn't expose it directly without adding it to the top level, 
-                                // we can just force a refresh for simplicity or use the hook properly.
+                                // Refresh materials list via context
                                 window.location.reload();
                               } else {
                                 alert('削除に失敗しました。');
